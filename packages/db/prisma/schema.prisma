@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum QuizStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SessionState {
+  LOBBY
+  QUESTION
+  REVEAL
+  LEADERBOARD
+  FINISHED
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  quizzes  Quiz[]
+  sessions GameSession[]
+
+  @@index([email])
+}
+
+model Quiz {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  status      QuizStatus @default(DRAFT)
+
+  createdById String
+  createdBy   Admin  @relation(fields: [createdById], references: [id])
+
+  questions Question[]
+  sessions  GameSession[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdById])
+  @@index([status])
+}
+
+model Question {
+  id   String @id @default(cuid())
+  text String
+
+  order Int
+
+  timeLimit Int @default(20)
+
+  // Maximum score available
+  points Int @default(1000)
+
+  quizId String
+  quiz   Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  options QuestionOption[]
+  answers Answer[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([quizId, order])
+  @@index([quizId])
+}
+
+model QuestionOption {
+  id        String  @id @default(cuid())
+  text      String
+  order     Int
+  isCorrect Boolean @default(false)
+
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  answers Answer[]
+
+  @@unique([questionId, order])
+  @@index([questionId])
+}
+
+model GameSession {
+  id String @id @default(cuid())
+
+  joinCode String @unique
+
+  state SessionState @default(LOBBY)
+
+  currentQuestionId String?
+
+  questionStartedAt DateTime?
+  questionEndsAt    DateTime?
+
+  quizId String
+  quiz   Quiz   @relation(fields: [quizId], references: [id])
+
+  hostId String
+  host   Admin  @relation(fields: [hostId], references: [id])
+
+  participants Participant[]
+  answers      Answer[]
+
+  createdAt  DateTime  @default(now())
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  @@index([joinCode])
+  @@index([quizId])
+  @@index([hostId])
+  @@index([state])
+}
+
+model Participant {
+  id       String @id @default(cuid())
+  nickname String
+
+  sessionId String
+  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  reconnectToken String @unique
+
+  score     Int @default(0)
+  streak    Int @default(0)
+  maxStreak Int @default(0)
+
+  answers Answer[]
+
+  joinedAt   DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+
+  @@index([sessionId])
+  @@index([sessionId, score])
+}
+
+model Answer {
+  id String @id @default(cuid())
+
+  participantId String
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  sessionId String
+  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+
+  selectedOptionId String
+  selectedOption   QuestionOption @relation(fields: [selectedOptionId], references: [id])
+
+  isCorrect Boolean
+
+  pointsAwarded Int @default(0)
+
+  answeredAt DateTime @default(now())
+
+  responseTimeMs Int
+
+  @@unique([sessionId, participantId, questionId])
+  @@index([sessionId, questionId])
+  @@index([participantId])
+  @@index([selectedOptionId])
+}
