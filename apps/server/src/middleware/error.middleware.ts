@@ -1,6 +1,7 @@
 import { AuthError } from "@repo/auth";
 import type { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
+import { AppError } from "../utils/errors.js";
 
 export const errorMiddleware = (
   err: Error,
@@ -10,6 +11,17 @@ export const errorMiddleware = (
   next: NextFunction
 ): void => {
   console.error(`[Error] ${req.method} ${req.originalUrl}:`, err);
+
+  if (err instanceof AppError) {
+    res.status(err.statusCode).json({
+      success: false,
+      error: {
+        code: err.code,
+        message: err.message,
+      },
+    });
+    return;
+  }
 
   if (err instanceof AuthError) {
     res.status(err.statusCode).json({
