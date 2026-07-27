@@ -3,11 +3,15 @@ import type { Admin } from "@repo/db";
 
 export class AuthRepository {
   async findAdminByEmail(email: string): Promise<Admin | null> {
-    return null;
+    return db.admin.findUnique({
+      where: { email },
+    });
   }
 
   async findAdminById(id: string): Promise<Admin | null> {
-    return null;
+    return db.admin.findUnique({
+      where: { id },
+    });
   }
 }
 
