@@ -1,12 +1,9 @@
 import { extractToken, verifyToken } from "@repo/auth";
+import type { AuthTokenPayload } from "@repo/auth";
 import type { NextFunction, Request, Response } from "express";
 
 export interface AuthenticatedRequest extends Request {
-  user?: {
-    sub: string;
-    email: string;
-    role?: string;
-  };
+  user?: AuthTokenPayload;
 }
 
 export const authenticate = (
