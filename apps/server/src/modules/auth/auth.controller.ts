@@ -1,5 +1,5 @@
 import { AUTH_COOKIE_NAME, getAuthCookieOptions, getClearAuthCookieOptions, UnauthorizedError } from "@repo/auth";
-import { adminLoginSchema } from "@repo/validation";
+import { adminLoginSchema, adminRegisterSchema } from "@repo/validation";
 import type { Request, Response } from "express";
 import type { AuthenticatedRequest } from "../../middleware/auth.middleware.js";
 import { AuthService, authService } from "./auth.service.js";
@@ -14,6 +14,18 @@ export class AuthController {
     res.cookie(AUTH_COOKIE_NAME, result.token, getAuthCookieOptions());
 
     res.status(200).json({
+      success: true,
+      data: result,
+    });
+  };
+
+  register = async (req: Request, res: Response): Promise<void> => {
+    const input = adminRegisterSchema.parse(req.body);
+    const result = await this.service.register(input.email, input.password);
+
+    res.cookie(AUTH_COOKIE_NAME, result.token, getAuthCookieOptions());
+
+    res.status(201).json({
       success: true,
       data: result,
     });

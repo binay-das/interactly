@@ -13,6 +13,15 @@ export class AuthRepository {
       where: { id },
     });
   }
+
+  async createAdmin(email: string, passwordHash: string): Promise<Admin> {
+    return db.admin.create({
+      data: {
+        email,
+        passwordHash,
+      },
+    });
+  }
 }
 
 export const authRepository = new AuthRepository();
