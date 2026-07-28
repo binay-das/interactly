@@ -1,4 +1,14 @@
-import type { AdminLoginRequest, AdminLoginResponse, ApiResponse, AuthUser } from "@repo/types";
+import type {
+  AdminLoginRequest,
+  AdminLoginResponse,
+  ApiResponse,
+  AuthUser,
+  CreateQuizDTO,
+  QuizDetails,
+  UpdateQuizDTO,
+} from "@repo/types";
+
+
 import type { AdminRegisterInput } from "@repo/validation";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -85,4 +95,47 @@ export async function logoutApi(): Promise<void> {
 export async function getMeApi(): Promise<AuthUser> {
   const result = await apiClient.get<{ user: AuthUser }>("/auth/me");
   return result.user;
+}
+
+
+
+
+
+
+export interface PaginatedQuizzesResponse {
+  quizzes: QuizDetails[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export async function listQuizzesApi(page = 1, limit = 50): Promise<PaginatedQuizzesResponse> {
+  return apiClient.get<PaginatedQuizzesResponse>(`/quizzes?page=${page}&limit=${limit}`);
+}
+
+export async function createQuizApi(data: CreateQuizDTO): Promise<QuizDetails> {
+  return apiClient.post<QuizDetails>("/quizzes", data);
+}
+
+export async function getQuizApi(id: string): Promise<QuizDetails> {
+  return apiClient.get<QuizDetails>(`/quizzes/${id}`);
+}
+
+export async function updateQuizApi(id: string, data: UpdateQuizDTO): Promise<QuizDetails> {
+  return apiClient.patch<QuizDetails>(`/quizzes/${id}`, data);
+}
+
+export async function deleteQuizApi(id: string): Promise<{ message: string }> {
+  return apiClient.delete<{ message: string }>(`/quizzes/${id}`);
+}
+
+export async function publishQuizApi(id: string): Promise<QuizDetails> {
+  return apiClient.post<QuizDetails>(`/quizzes/${id}/publish`);
+}
+
+export async function archiveQuizApi(id: string): Promise<QuizDetails> {
+  return apiClient.post<QuizDetails>(`/quizzes/${id}/archive`);
 }
