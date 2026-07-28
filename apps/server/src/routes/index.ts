@@ -1,9 +1,9 @@
 import { Router } from "express";
 import authRouter from "../modules/auth/auth.routes.js";
-import quizRouter from "../modules/quiz/quiz.router.js";
-import sessionRouter from "../modules/session/session.router.js";
-import playerRouter from "../modules/player/player.router.js";
-import gameplayRouter from "../modules/gameplay/gameplay.router.js";
+import quizRouter from "../modules/quiz/quiz.routes.js";
+import sessionRouter from "../modules/session/session.routes.js";
+import playerRouter from "../modules/player/player.routes.js";
+import gameplayRouter from "../modules/gameplay/gameplay.routes.js";
 
 const apiRouter: Router = Router();
 
