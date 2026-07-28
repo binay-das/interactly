@@ -34,7 +34,7 @@ export function QuizCard({
           <StatusBadge status={quiz.status} />
         </div>
 
-        <p className="text-xs text-zinc-400 leading-relaxed mb-4 line-clamp-2 min-h-[2rem]">
+        <p className="text-xs text-zinc-400 leading-relaxed mb-4 line-clamp-2 min-h-8">
           {quiz.description || "No description provided."}
         </p>
       </div>
