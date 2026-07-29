@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { QuizDetails } from "@repo/types";
 
 interface QuizCardProps {
@@ -28,9 +29,12 @@ export function QuizCard({
     <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-5 hover:border-zinc-700 transition-all flex flex-col justify-between group">
       <div>
         <div className="flex items-start justify-between gap-3 mb-2.5">
-          <h3 className="font-semibold text-zinc-100 text-base tracking-tight leading-snug line-clamp-1 group-hover:text-white transition-colors">
+          <Link
+            href={`/dashboard/quizzes/${quiz.id}`}
+            className="font-semibold text-zinc-100 text-base tracking-tight leading-snug line-clamp-1 group-hover:text-indigo-400 transition-colors"
+          >
             {quiz.title}
-          </h3>
+          </Link>
           <StatusBadge status={quiz.status} />
         </div>
 
@@ -52,12 +56,19 @@ export function QuizCard({
         </div>
 
         <div className="flex items-center gap-1.5">
+          <Link
+            href={`/dashboard/quizzes/${quiz.id}`}
+            className="px-2.5 py-1 rounded text-xs font-medium bg-zinc-950 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
+          >
+            Edit
+          </Link>
+
           {quiz.status === "DRAFT" && (
             <button
               onClick={() => onPublish(quiz)}
               disabled={isActionLoading}
               title="Publish Quiz"
-              className="px-2.5 py-1 rounded text-xs font-medium bg-emerald-950/60 border border-emerald-800/60 text-emerald-300 hover:bg-emerald-900/60 hover:border-emerald-700 transition-colors disabled:opacity-50"
+              className="px-2.5 py-1 rounded text-xs font-medium bg-emerald-950/60 border border-emerald-800/60 text-emerald-300 hover:bg-emerald-900/60 hover:border-emerald-700 transition-colors disabled:opacity-50 cursor-pointer"
             >
               Publish
             </button>
@@ -68,7 +79,7 @@ export function QuizCard({
               onClick={() => onArchive(quiz)}
               disabled={isActionLoading}
               title="Archive Quiz"
-              className="px-2.5 py-1 rounded text-xs font-medium bg-zinc-950 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors disabled:opacity-50"
+              className="px-2.5 py-1 rounded text-xs font-medium bg-zinc-950 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors disabled:opacity-50 cursor-pointer"
             >
               Archive
             </button>
@@ -78,7 +89,7 @@ export function QuizCard({
             onClick={() => onDelete(quiz)}
             disabled={isActionLoading}
             title="Delete Quiz"
-            className="p-1 rounded text-zinc-500 hover:text-red-400 hover:bg-red-950/30 transition-colors disabled:opacity-50"
+            className="p-1 rounded text-zinc-500 hover:text-red-400 hover:bg-red-950/30 transition-colors disabled:opacity-50 cursor-pointer"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
