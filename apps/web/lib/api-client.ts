@@ -104,7 +104,6 @@ export async function getMeApi(): Promise<AuthUser> {
   return result.user;
 }
 
-// Quiz API Methods
 export interface PaginatedQuizzesResponse {
   quizzes: QuizDetails[];
   pagination: {
@@ -143,7 +142,6 @@ export async function archiveQuizApi(id: string): Promise<QuizDetails> {
   return apiClient.post<QuizDetails>(`/quizzes/${id}/archive`);
 }
 
-// Question & Option API Methods
 export async function addQuestionApi(
   quizId: string,
   input: CreateQuestionInput
@@ -185,4 +183,44 @@ export async function updateOptionApi(
 
 export async function deleteOptionApi(optionId: string): Promise<{ message: string }> {
   return apiClient.delete<{ message: string }>(`/quizzes/options/${optionId}`);
+}
+
+export interface SessionParticipant {
+  id: string;
+  nickname: string;
+  score: number;
+  joinedAt?: string;
+}
+
+export interface GameSessionFull {
+  id: string;
+  quizId: string;
+  hostId: string;
+  joinCode: string;
+  state: "LOBBY" | "QUESTION" | "REVEAL" | "LEADERBOARD" | "FINISHED";
+  currentQuestionId?: string | null;
+  questionStartedAt?: string | null;
+  questionEndsAt?: string | null;
+  startedAt?: string | null;
+  finishedAt?: string | null;
+  createdAt: string;
+  quiz?: QuizDetails;
+  participants?: SessionParticipant[];
+  host?: { id: string; email: string };
+}
+
+export async function createSessionApi(quizId: string): Promise<GameSessionFull> {
+  return apiClient.post<GameSessionFull>("/sessions", { quizId });
+}
+
+export async function getSessionApi(id: string): Promise<GameSessionFull> {
+  return apiClient.get<GameSessionFull>(`/sessions/${id}`);
+}
+
+export async function startQuizSessionApi(id: string): Promise<GameSessionFull> {
+  return apiClient.post<GameSessionFull>(`/sessions/${id}/start`);
+}
+
+export async function endQuizSessionApi(id: string): Promise<GameSessionFull> {
+  return apiClient.post<GameSessionFull>(`/sessions/${id}/end`);
 }
