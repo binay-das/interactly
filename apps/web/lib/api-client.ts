@@ -4,12 +4,18 @@ import type {
   ApiResponse,
   AuthUser,
   CreateQuizDTO,
+  QuestionDetails,
+  QuestionOption,
   QuizDetails,
   UpdateQuizDTO,
 } from "@repo/types";
-
-
-import type { AdminRegisterInput } from "@repo/validation";
+import type {
+  AdminRegisterInput,
+  CreateOptionInput,
+  CreateQuestionInput,
+  UpdateOptionInput,
+  UpdateQuestionInput,
+} from "@repo/validation";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
@@ -80,6 +86,7 @@ export const apiClient = {
     fetchApi<T>(endpoint, { ...options, method: "DELETE" }),
 };
 
+// Auth API Methods
 export async function loginApi(credentials: AdminLoginRequest): Promise<AdminLoginResponse> {
   return apiClient.post<AdminLoginResponse>("/auth/login", credentials);
 }
@@ -97,11 +104,7 @@ export async function getMeApi(): Promise<AuthUser> {
   return result.user;
 }
 
-
-
-
-
-
+// Quiz API Methods
 export interface PaginatedQuizzesResponse {
   quizzes: QuizDetails[];
   pagination: {
@@ -138,4 +141,48 @@ export async function publishQuizApi(id: string): Promise<QuizDetails> {
 
 export async function archiveQuizApi(id: string): Promise<QuizDetails> {
   return apiClient.post<QuizDetails>(`/quizzes/${id}/archive`);
+}
+
+// Question & Option API Methods
+export async function addQuestionApi(
+  quizId: string,
+  input: CreateQuestionInput
+): Promise<QuestionDetails> {
+  return apiClient.post<QuestionDetails>(`/quizzes/${quizId}/questions`, input);
+}
+
+export async function editQuestionApi(
+  questionId: string,
+  input: UpdateQuestionInput
+): Promise<QuestionDetails> {
+  return apiClient.patch<QuestionDetails>(`/quizzes/questions/${questionId}`, input);
+}
+
+export async function deleteQuestionApi(questionId: string): Promise<{ message: string }> {
+  return apiClient.delete<{ message: string }>(`/quizzes/questions/${questionId}`);
+}
+
+export async function reorderQuestionsApi(
+  quizId: string,
+  orders: { questionId: string; newOrder: number }[]
+): Promise<QuizDetails> {
+  return apiClient.post<QuizDetails>(`/quizzes/${quizId}/questions/reorder`, { orders });
+}
+
+export async function createOptionApi(
+  questionId: string,
+  input: CreateOptionInput
+): Promise<QuestionOption> {
+  return apiClient.post<QuestionOption>(`/quizzes/questions/${questionId}/options`, input);
+}
+
+export async function updateOptionApi(
+  optionId: string,
+  input: UpdateOptionInput
+): Promise<QuestionOption> {
+  return apiClient.patch<QuestionOption>(`/quizzes/options/${optionId}`, input);
+}
+
+export async function deleteOptionApi(optionId: string): Promise<{ message: string }> {
+  return apiClient.delete<{ message: string }>(`/quizzes/options/${optionId}`);
 }
