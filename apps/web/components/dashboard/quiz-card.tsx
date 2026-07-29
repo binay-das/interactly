@@ -8,6 +8,7 @@ interface QuizCardProps {
   onPublish: (quiz: QuizDetails) => void;
   onArchive: (quiz: QuizDetails) => void;
   onDelete: (quiz: QuizDetails) => void;
+  onHost?: (quiz: QuizDetails) => void;
   isActionLoading?: boolean;
 }
 
@@ -16,6 +17,7 @@ export function QuizCard({
   onPublish,
   onArchive,
   onDelete,
+  onHost,
   isActionLoading,
 }: QuizCardProps) {
   const questionCount = quiz.questions?.length ?? quiz.totalQuestions ?? 0;
@@ -56,6 +58,17 @@ export function QuizCard({
         </div>
 
         <div className="flex items-center gap-1.5">
+          {quiz.status === "PUBLISHED" && onHost && (
+            <button
+              onClick={() => onHost(quiz)}
+              disabled={isActionLoading}
+              title="Host Live Quiz Session"
+              className="px-2.5 py-1 rounded text-xs font-semibold bg-indigo-950/60 border border-indigo-800/60 text-indigo-300 hover:bg-indigo-900/60 transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              Host Session
+            </button>
+          )}
+
           <Link
             href={`/dashboard/quizzes/${quiz.id}`}
             className="px-2.5 py-1 rounded text-xs font-medium bg-zinc-950 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
