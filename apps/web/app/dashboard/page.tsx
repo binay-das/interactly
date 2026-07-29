@@ -15,6 +15,7 @@ import { QuizCard } from "../../components/dashboard/quiz-card";
 import { CreateQuizModal } from "../../components/dashboard/create-quiz-modal";
 import { DeleteQuizDialog } from "../../components/dashboard/delete-quiz-dialog";
 import { QuizFilters, type StatusFilter } from "../../components/dashboard/quiz-filters";
+import { CreateSessionModal } from "../../components/session/create-session-modal";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -28,6 +29,8 @@ export default function DashboardPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
+  const [selectedQuizForSession, setSelectedQuizForSession] = useState<string | undefined>();
   const [quizToDelete, setQuizToDelete] = useState<QuizDetails | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [actionQuizId, setActionQuizId] = useState<string | null>(null);
@@ -116,6 +119,11 @@ export default function DashboardPage() {
     }
   };
 
+  const handleHostSession = (quiz: QuizDetails) => {
+    setSelectedQuizForSession(quiz.id);
+    setIsSessionModalOpen(true);
+  };
+
   const handleQuizCreated = (newQuiz: QuizDetails) => {
     setQuizzes((prev) => [newQuiz, ...prev]);
   };
@@ -136,15 +144,31 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            <button
-              onClick={() => setIsCreateModalOpen(true)}
-              className="px-4 py-2 rounded-md text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-zinc-200 transition-colors shadow-sm cursor-pointer flex items-center justify-center gap-1.5 self-start sm:self-auto"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              <span>Create Quiz</span>
-            </button>
+            <div className="flex items-center gap-2.5 self-start sm:self-auto">
+              <button
+                onClick={() => {
+                  setSelectedQuizForSession(undefined);
+                  setIsSessionModalOpen(true);
+                }}
+                className="px-3.5 py-2 rounded-md text-xs font-semibold text-indigo-300 bg-indigo-950/60 border border-indigo-800/60 hover:bg-indigo-900/60 transition-colors shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Host Session</span>
+              </button>
+
+              <button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="px-4 py-2 rounded-md text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-zinc-200 transition-colors shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                <span>Create Quiz</span>
+              </button>
+            </div>
           </div>
 
           {actionError && (
@@ -258,6 +282,7 @@ export default function DashboardPage() {
                   onPublish={handlePublish}
                   onArchive={handleArchive}
                   onDelete={setQuizToDelete}
+                  onHost={handleHostSession}
                   isActionLoading={actionQuizId === quiz.id}
                 />
               ))}
@@ -269,6 +294,12 @@ export default function DashboardPage() {
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
           onSuccess={handleQuizCreated}
+        />
+
+        <CreateSessionModal
+          isOpen={isSessionModalOpen}
+          onClose={() => setIsSessionModalOpen(false)}
+          preselectedQuizId={selectedQuizForSession}
         />
 
         <DeleteQuizDialog
