@@ -86,7 +86,6 @@ export const apiClient = {
     fetchApi<T>(endpoint, { ...options, method: "DELETE" }),
 };
 
-// Auth API Methods
 export async function loginApi(credentials: AdminLoginRequest): Promise<AdminLoginResponse> {
   return apiClient.post<AdminLoginResponse>("/auth/login", credentials);
 }
@@ -223,4 +222,87 @@ export async function startQuizSessionApi(id: string): Promise<GameSessionFull> 
 
 export async function endQuizSessionApi(id: string): Promise<GameSessionFull> {
   return apiClient.post<GameSessionFull>(`/sessions/${id}/end`);
+}
+
+export interface JoinPlayerResponse {
+  participantId: string;
+  nickname: string;
+  sessionId: string;
+  reconnectToken: string;
+  sessionState: "LOBBY" | "QUESTION" | "REVEAL" | "LEADERBOARD" | "FINISHED";
+}
+
+export interface ReconnectPlayerResponse {
+  participant: {
+    id: string;
+    nickname: string;
+    score: number;
+    streak: number;
+    maxStreak: number;
+    reconnectToken: string;
+  };
+  sessionState: "LOBBY" | "QUESTION" | "REVEAL" | "LEADERBOARD" | "FINISHED";
+  quizTitle: string;
+}
+
+export interface PlayerSessionStateResponse {
+  sessionId: string;
+  state: "LOBBY" | "QUESTION" | "REVEAL" | "LEADERBOARD" | "FINISHED";
+  currentQuestionId?: string | null;
+  questionStartedAt?: string | null;
+  questionEndsAt?: string | null;
+}
+
+export interface SubmitAnswerResponse {
+  answerId: string;
+  isCorrect: boolean;
+  pointsAwarded: number;
+  currentScore: number;
+  streak: number;
+  maxStreak: number;
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  id: string;
+  nickname: string;
+  score: number;
+  streak: number;
+  maxStreak: number;
+}
+
+export interface FinalResultsResponse {
+  sessionId: string;
+  totalParticipants: number;
+  rankings: LeaderboardEntry[];
+}
+
+export async function joinPlayerApi(input: { joinCode: string; nickname: string }): Promise<JoinPlayerResponse> {
+  return apiClient.post<JoinPlayerResponse>("/players/join", input);
+}
+
+export async function reconnectPlayerApi(input: { reconnectToken: string; sessionId: string }): Promise<ReconnectPlayerResponse> {
+  return apiClient.post<ReconnectPlayerResponse>("/players/reconnect", input);
+}
+
+export async function getPlayerSessionStateApi(sessionId: string): Promise<PlayerSessionStateResponse> {
+  return apiClient.get<PlayerSessionStateResponse>(`/players/session/${sessionId}/state`);
+}
+
+export async function submitAnswerApi(input: {
+  sessionId: string;
+  participantId: string;
+  questionId: string;
+  selectedOptionId: string;
+  responseTimeMs: number;
+}): Promise<SubmitAnswerResponse> {
+  return apiClient.post<SubmitAnswerResponse>("/gameplay/answer", input);
+}
+
+export async function getLeaderboardApi(sessionId: string): Promise<LeaderboardEntry[]> {
+  return apiClient.get<LeaderboardEntry[]>(`/gameplay/session/${sessionId}/leaderboard`);
+}
+
+export async function getFinalResultsApi(sessionId: string): Promise<FinalResultsResponse> {
+  return apiClient.get<FinalResultsResponse>(`/gameplay/session/${sessionId}/results`);
 }
