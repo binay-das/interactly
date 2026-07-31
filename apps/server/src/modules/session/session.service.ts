@@ -1,3 +1,4 @@
+import type { SessionState } from "@repo/db";
 import type { CreateSessionInput } from "@repo/validation";
 import { BadRequestError, ForbiddenError, NotFoundError } from "../../utils/errors.js";
 import { generateJoinCode } from "../../utils/joinCode.js";
@@ -73,6 +74,70 @@ export class SessionService {
       questionStartedAt: now,
       questionEndsAt: endsAt,
       startedAt: now,
+    });
+  }
+
+  async advanceState(sessionId: string, hostId: string, targetState?: string, questionId?: string) {
+    const session = await this.getSession(sessionId);
+
+    if (session.hostId !== hostId) {
+      throw new ForbiddenError("Only the session host can control session state");
+    }
+
+    const questions = session.quiz.questions;
+    const currentIndex = questions.findIndex((q) => q.id === session.currentQuestionId);
+
+    let nextState: SessionState = session.state;
+    let nextQuestionId: string | null | undefined = session.currentQuestionId;
+    let questionStartedAt: Date | null | undefined = session.questionStartedAt;
+    let questionEndsAt: Date | null | undefined = session.questionEndsAt;
+
+    if (targetState) {
+      nextState = targetState as SessionState;
+      if (questionId !== undefined) {
+        nextQuestionId = questionId;
+      }
+      if (nextState === "QUESTION" && nextQuestionId) {
+        const q = questions.find((item) => item.id === nextQuestionId);
+        const limit = q ? q.timeLimit : 20;
+        const now = new Date();
+        questionStartedAt = now;
+        questionEndsAt = new Date(now.getTime() + limit * 1000);
+      }
+    } else {
+      if (session.state === "LOBBY") {
+        nextState = "QUESTION";
+        const firstQ = questions[0];
+        if (firstQ) {
+          nextQuestionId = firstQ.id;
+          const now = new Date();
+          questionStartedAt = now;
+          questionEndsAt = new Date(now.getTime() + firstQ.timeLimit * 1000);
+        }
+      } else if (session.state === "QUESTION") {
+        nextState = "REVEAL";
+      } else if (session.state === "REVEAL") {
+        nextState = "LEADERBOARD";
+      } else if (session.state === "LEADERBOARD") {
+        const nextQ = questions[currentIndex + 1];
+        if (nextQ) {
+          nextState = "QUESTION";
+          nextQuestionId = nextQ.id;
+          const now = new Date();
+          questionStartedAt = now;
+          questionEndsAt = new Date(now.getTime() + nextQ.timeLimit * 1000);
+        } else {
+          nextState = "FINISHED";
+        }
+      }
+    }
+
+    return this.repository.updateSessionState(sessionId, {
+      state: nextState,
+      currentQuestionId: nextQuestionId,
+      questionStartedAt,
+      questionEndsAt,
+      finishedAt: nextState === "FINISHED" ? new Date() : null,
     });
   }
 
