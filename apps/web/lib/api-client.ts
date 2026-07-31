@@ -224,6 +224,17 @@ export async function endQuizSessionApi(id: string): Promise<GameSessionFull> {
   return apiClient.post<GameSessionFull>(`/sessions/${id}/end`);
 }
 
+export async function advanceQuizSessionStateApi(
+  id: string,
+  targetState?: string,
+  questionId?: string
+): Promise<GameSessionFull> {
+  return apiClient.post<GameSessionFull>(`/sessions/${id}/advance`, {
+    targetState,
+    questionId,
+  });
+}
+
 export interface JoinPlayerResponse {
   participantId: string;
   nickname: string;
