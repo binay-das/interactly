@@ -22,6 +22,17 @@ export class SessionController {
     res.status(200).json({ success: true, data: session });
   };
 
+  advanceState = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    const { targetState, questionId } = req.body || {};
+    const session = await this.service.advanceState(
+      req.params.id as string,
+      req.user!.sub,
+      targetState,
+      questionId
+    );
+    res.status(200).json({ success: true, data: session });
+  };
+
   endQuiz = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const session = await this.service.endQuiz(req.params.id as string, req.user!.sub);
     res.status(200).json({ success: true, data: session });
