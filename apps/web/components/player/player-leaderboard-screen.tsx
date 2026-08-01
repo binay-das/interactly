@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getLeaderboardApi, type LeaderboardEntry } from "../../lib/api-client";
+import { useLeaderboardPolling } from "../../hooks/useSessionPolling";
 
 interface PlayerLeaderboardScreenProps {
   sessionId: string;
   currentParticipantId?: string;
-  nickname: string;
+  nickname?: string;
 }
 
 export function PlayerLeaderboardScreen({
@@ -14,28 +13,14 @@ export function PlayerLeaderboardScreen({
   currentParticipantId,
   nickname,
 }: PlayerLeaderboardScreenProps) {
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: leaderboard = [], isLoading, error: pollingError } = useLeaderboardPolling(sessionId, {
+    intervalMs: 2500,
+  });
 
-  useEffect(() => {
-    const fetchLeaderboard = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await getLeaderboardApi(sessionId);
-        setLeaderboard(data);
-      } catch {
-        setError("Unable to load leaderboard");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const entries = leaderboard || [];
+  const error = pollingError ? "Unable to load leaderboard" : null;
 
-    fetchLeaderboard();
-  }, [sessionId]);
-
-  const playerRank = leaderboard.find((p) => p.id === currentParticipantId || p.nickname === nickname);
+  const playerRank = entries.find((p) => p.id === currentParticipantId || p.nickname === nickname);
 
   return (
     <div className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
@@ -48,7 +33,6 @@ export function PlayerLeaderboardScreen({
         </h2>
       </div>
 
-      {/* Player's Own Rank Summary */}
       {playerRank && (
         <div className="bg-gradient-to-r from-indigo-950/80 to-zinc-900 border border-indigo-700/80 p-4 rounded-2xl flex items-center justify-between shadow-md">
           <div className="flex items-center gap-3">
@@ -69,8 +53,7 @@ export function PlayerLeaderboardScreen({
         </div>
       )}
 
-      {/* Loading Skeleton */}
-      {isLoading && (
+      {isLoading && entries.length === 0 && (
         <div className="space-y-2.5">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="h-12 bg-zinc-950 rounded-xl border border-zinc-800 animate-pulse" />
@@ -82,10 +65,9 @@ export function PlayerLeaderboardScreen({
         <p className="text-xs text-red-400 text-center">{error}</p>
       )}
 
-      {/* Top Rankings List */}
       {!isLoading && !error && (
         <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
-          {leaderboard.map((entry) => {
+          {entries.map((entry) => {
             const isMe = entry.id === currentParticipantId || entry.nickname === nickname;
             return (
               <div
