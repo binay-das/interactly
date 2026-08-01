@@ -212,8 +212,8 @@ export async function createSessionApi(quizId: string): Promise<GameSessionFull>
   return apiClient.post<GameSessionFull>("/sessions", { quizId });
 }
 
-export async function getSessionApi(id: string): Promise<GameSessionFull> {
-  return apiClient.get<GameSessionFull>(`/sessions/${id}`);
+export async function getSessionApi(id: string, options?: RequestInit): Promise<GameSessionFull> {
+  return apiClient.get<GameSessionFull>(`/sessions/${id}`, options);
 }
 
 export async function startQuizSessionApi(id: string): Promise<GameSessionFull> {
@@ -296,8 +296,8 @@ export async function reconnectPlayerApi(input: { reconnectToken: string; sessio
   return apiClient.post<ReconnectPlayerResponse>("/players/reconnect", input);
 }
 
-export async function getPlayerSessionStateApi(sessionId: string): Promise<PlayerSessionStateResponse> {
-  return apiClient.get<PlayerSessionStateResponse>(`/players/session/${sessionId}/state`);
+export async function getPlayerSessionStateApi(sessionId: string, options?: RequestInit): Promise<PlayerSessionStateResponse> {
+  return apiClient.get<PlayerSessionStateResponse>(`/players/session/${sessionId}/state`, options);
 }
 
 export async function submitAnswerApi(input: {
@@ -310,10 +310,10 @@ export async function submitAnswerApi(input: {
   return apiClient.post<SubmitAnswerResponse>("/gameplay/answer", input);
 }
 
-export async function getLeaderboardApi(sessionId: string): Promise<LeaderboardEntry[]> {
-  return apiClient.get<LeaderboardEntry[]>(`/gameplay/session/${sessionId}/leaderboard`);
+export async function getLeaderboardApi(sessionId: string, options?: RequestInit): Promise<LeaderboardEntry[]> {
+  return apiClient.get<LeaderboardEntry[]>(`/gameplay/session/${sessionId}/leaderboard`, options);
 }
 
-export async function getFinalResultsApi(sessionId: string): Promise<FinalResultsResponse> {
-  return apiClient.get<FinalResultsResponse>(`/gameplay/session/${sessionId}/results`);
+export async function getFinalResultsApi(sessionId: string, options?: RequestInit): Promise<FinalResultsResponse> {
+  return apiClient.get<FinalResultsResponse>(`/gameplay/session/${sessionId}/results`, options);
 }
