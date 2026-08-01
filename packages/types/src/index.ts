@@ -6,3 +6,5 @@ export * from "./player.js";
 export * from "./session.js";
 export * from "./leaderboard.js";
 export * from "./dto.js";
+export * from "./analytics.js";
+
