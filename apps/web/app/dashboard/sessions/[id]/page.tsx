@@ -9,6 +9,7 @@ import { QRCodeDisplay } from "../../../../components/session/qr-code-display";
 import { ConnectedPlayersGrid } from "../../../../components/session/connected-players-grid";
 import { SessionControlsBar } from "../../../../components/session/session-controls-bar";
 import {
+  advanceQuizSessionStateApi,
   endQuizSessionApi,
   startQuizSessionApi,
 } from "../../../../lib/api-client";
@@ -24,6 +25,7 @@ export default function SessionPage({ params }: SessionPageProps) {
   const [actionError, setActionError] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
   const [isEnding, setIsEnding] = useState(false);
+  const [isAdvancing, setIsAdvancing] = useState(false);
 
   // Reusable host session polling hook
   const { data: session, isLoading, error: pollingError, refetch } = useHostSessionPolling(sessionId, {
@@ -45,6 +47,22 @@ export default function SessionPage({ params }: SessionPageProps) {
       setActionError(msg);
     } finally {
       setIsStarting(false);
+    }
+  };
+
+  const handleAdvanceState = async () => {
+    if (!session) return;
+    setActionError(null);
+    setIsAdvancing(true);
+
+    try {
+      await advanceQuizSessionStateApi(session.id);
+      await refetch();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to advance quiz session state";
+      setActionError(msg);
+    } finally {
+      setIsAdvancing(false);
     }
   };
 
@@ -171,8 +189,10 @@ export default function SessionPage({ params }: SessionPageProps) {
                     state={session.state}
                     onStartQuiz={handleStartQuiz}
                     onEndQuiz={handleEndQuiz}
+                    onAdvanceState={handleAdvanceState}
                     isStarting={isStarting}
                     isEnding={isEnding}
+                    isAdvancing={isAdvancing}
                     participantCount={session.participants?.length || 0}
                     questionCount={session.quiz?.questions?.length || 0}
                   />
