@@ -1,14 +1,14 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { QuestionDetails } from "@repo/types";
 import {
   advanceQuizSessionStateApi,
   endQuizSessionApi,
-  getSessionApi,
   type GameSessionFull,
 } from "../../../../../lib/api-client";
+import { useHostSessionPolling } from "../../../../../hooks/useSessionPolling";
 import { PresenterControls } from "../../../../../components/presenter/presenter-controls";
 import { PresenterLobby } from "../../../../../components/presenter/presenter-lobby";
 import { PresenterQuestion } from "../../../../../components/presenter/presenter-question";
@@ -24,48 +24,26 @@ export default function PresenterPage({ params }: PresenterPageProps) {
   const { id } = use(params);
   const router = useRouter();
 
-  const [session, setSession] = useState<GameSessionFull | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isAdvancing, setIsAdvancing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorOverride, setErrorOverride] = useState<string | null>(null);
 
-  useEffect(() => {
-    let isMounted = true;
+  // Reusable polling hook for Presenter View
+  const { data: session, isLoading, error: pollingError, refetch } = useHostSessionPolling(id, {
+    intervalMs: 1500,
+  });
 
-    const fetchSession = async () => {
-      try {
-        const data = await getSessionApi(id);
-        if (isMounted) {
-          setSession(data);
-          setError(null);
-        }
-      } catch (err: unknown) {
-        if (isMounted) {
-          setError(err instanceof Error ? err.message : "Failed to load presenter view");
-        }
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-
-    fetchSession();
-    const interval = setInterval(fetchSession, 1500);
-
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
-  }, [id]);
+  const error = errorOverride || (pollingError ? (pollingError as Error).message : null);
 
   const handleAdvanceState = async () => {
     if (!session || isAdvancing) return;
 
     setIsAdvancing(true);
+    setErrorOverride(null);
     try {
-      const updated = await advanceQuizSessionStateApi(id);
-      setSession(updated);
+      await advanceQuizSessionStateApi(id);
+      await refetch();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to advance state");
+      setErrorOverride(err instanceof Error ? err.message : "Failed to advance state");
     } finally {
       setIsAdvancing(false);
     }
@@ -75,15 +53,16 @@ export default function PresenterPage({ params }: PresenterPageProps) {
     if (!session) return;
     if (!confirm("Are you sure you want to end this game session?")) return;
 
+    setErrorOverride(null);
     try {
-      const updated = await endQuizSessionApi(id);
-      setSession(updated);
+      await endQuizSessionApi(id);
+      await refetch();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to end session");
+      setErrorOverride(err instanceof Error ? err.message : "Failed to end session");
     }
   };
 
-  if (isLoading) {
+  if (isLoading && !session) {
     return (
       <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center p-4">
         <div className="flex flex-col items-center gap-3">
