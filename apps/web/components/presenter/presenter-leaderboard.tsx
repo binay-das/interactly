@@ -1,30 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getLeaderboardApi, type LeaderboardEntry } from "../../lib/api-client";
+import { useLeaderboardPolling } from "../../hooks/useSessionPolling";
 
 interface PresenterLeaderboardProps {
   sessionId: string;
 }
 
 export function PresenterLeaderboard({ sessionId }: PresenterLeaderboardProps) {
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: leaderboard = [], isLoading } = useLeaderboardPolling(sessionId, {
+    intervalMs: 2500,
+  });
 
-  useEffect(() => {
-    const fetchLeaderboard = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getLeaderboardApi(sessionId);
-        setLeaderboard(data);
-      } catch {
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchLeaderboard();
-  }, [sessionId]);
+  const entries = leaderboard || [];
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8 animate-in zoom-in-95">
@@ -37,7 +24,7 @@ export function PresenterLeaderboard({ sessionId }: PresenterLeaderboardProps) {
         </h1>
       </div>
 
-      {isLoading ? (
+      {isLoading && entries.length === 0 ? (
         <div className="space-y-3 max-w-2xl mx-auto">
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="h-16 bg-zinc-900/80 rounded-2xl border border-zinc-800 animate-pulse" />
@@ -45,7 +32,7 @@ export function PresenterLeaderboard({ sessionId }: PresenterLeaderboardProps) {
         </div>
       ) : (
         <div className="space-y-3 max-w-2xl mx-auto">
-          {leaderboard.slice(0, 5).map((entry) => (
+          {entries.slice(0, 5).map((entry) => (
             <div
               key={entry.id}
               className={`p-4 sm:p-5 rounded-2xl border transition-all flex items-center justify-between shadow-xl ${
