@@ -4,8 +4,10 @@ interface SessionControlsBarProps {
   state: "LOBBY" | "QUESTION" | "REVEAL" | "LEADERBOARD" | "FINISHED";
   onStartQuiz: () => Promise<void>;
   onEndQuiz: () => Promise<void>;
+  onAdvanceState?: () => Promise<void>;
   isStarting?: boolean;
   isEnding?: boolean;
+  isAdvancing?: boolean;
   participantCount?: number;
   questionCount?: number;
 }
@@ -14,8 +16,10 @@ export function SessionControlsBar({
   state,
   onStartQuiz,
   onEndQuiz,
+  onAdvanceState,
   isStarting,
   isEnding,
+  isAdvancing,
   participantCount = 0,
   questionCount = 0,
 }: SessionControlsBarProps) {
@@ -32,7 +36,7 @@ export function SessionControlsBar({
         <StatusBadge state={state} />
         <div className="text-xs text-zinc-400">
           {isLobby && <span>Waiting for participants to join lobby</span>}
-          {isInProgress && <span className="text-indigo-400 font-medium animate-pulse">Quiz session in progress</span>}
+          {isInProgress && <span className="text-indigo-400 font-medium animate-pulse">Quiz session in progress ({state})</span>}
           {isFinished && <span className="text-zinc-500">Quiz session completed</span>}
         </div>
       </div>
@@ -56,6 +60,29 @@ export function SessionControlsBar({
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                 </svg>
                 <span>Start Quiz ({participantCount} Joined)</span>
+              </>
+            )}
+          </button>
+        )}
+
+        {isInProgress && onAdvanceState && (
+          <button
+            onClick={onAdvanceState}
+            disabled={isAdvancing}
+            title="Advance to Next State"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl font-semibold text-xs text-zinc-950 bg-indigo-400 hover:bg-indigo-300 disabled:opacity-40 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+          >
+            {isAdvancing ? (
+              <>
+                <div className="w-3.5 h-3.5 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin" />
+                <span>Advancing...</span>
+              </>
+            ) : (
+              <>
+                <span>Advance State ({state} → Next)</span>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </>
             )}
           </button>
@@ -104,7 +131,7 @@ function StatusBadge({ state }: { state: string }) {
       return (
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-950/50 text-emerald-300 border border-emerald-800/50">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          IN PROGRESS
+          {state}
         </span>
       );
     case "FINISHED":
