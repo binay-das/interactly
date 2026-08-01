@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useState } from "react";
 import Link from "next/link";
 import { ProtectedRoute } from "../../../../components/protected-route";
 import { Navbar } from "../../../../components/navbar";
@@ -10,10 +10,9 @@ import { ConnectedPlayersGrid } from "../../../../components/session/connected-p
 import { SessionControlsBar } from "../../../../components/session/session-controls-bar";
 import {
   endQuizSessionApi,
-  getSessionApi,
   startQuizSessionApi,
-  type GameSessionFull,
 } from "../../../../lib/api-client";
+import { useHostSessionPolling } from "../../../../hooks/useSessionPolling";
 
 interface SessionPageProps {
   params: Promise<{ id: string }>;
@@ -22,37 +21,16 @@ interface SessionPageProps {
 export default function SessionPage({ params }: SessionPageProps) {
   const { id: sessionId } = use(params);
 
-  const [session, setSession] = useState<GameSessionFull | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
   const [isEnding, setIsEnding] = useState(false);
 
-  const fetchSession = async (showLoading = false) => {
-    if (showLoading) setIsLoading(true);
-    setError(null);
+  // Reusable host session polling hook
+  const { data: session, isLoading, error: pollingError, refetch } = useHostSessionPolling(sessionId, {
+    intervalMs: 2500,
+  });
 
-    try {
-      const data = await getSessionApi(sessionId);
-      setSession(data);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to load session details";
-      setError(msg);
-    } finally {
-      if (showLoading) setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchSession(true);
-
-    const interval = setInterval(() => {
-      fetchSession(false);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [sessionId]);
+  const error = pollingError ? (pollingError as Error).message : null;
 
   const handleStartQuiz = async () => {
     if (!session) return;
@@ -60,8 +38,8 @@ export default function SessionPage({ params }: SessionPageProps) {
     setIsStarting(true);
 
     try {
-      const updated = await startQuizSessionApi(session.id);
-      setSession(updated);
+      await startQuizSessionApi(session.id);
+      await refetch();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to start quiz session";
       setActionError(msg);
@@ -76,8 +54,8 @@ export default function SessionPage({ params }: SessionPageProps) {
     setIsEnding(true);
 
     try {
-      const updated = await endQuizSessionApi(session.id);
-      setSession(updated);
+      await endQuizSessionApi(session.id);
+      await refetch();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to end quiz session";
       setActionError(msg);
@@ -104,7 +82,7 @@ export default function SessionPage({ params }: SessionPageProps) {
             </Link>
           </div>
 
-          {isLoading && (
+          {isLoading && !session && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-pulse">
               <div className="lg:col-span-1 space-y-6">
                 <div className="h-48 bg-zinc-900 border border-zinc-800 rounded-2xl" />
@@ -117,11 +95,11 @@ export default function SessionPage({ params }: SessionPageProps) {
             </div>
           )}
 
-          {error && (
+          {error && !session && (
             <div className="bg-red-950/40 border border-red-800/50 rounded-2xl p-8 text-center my-6">
               <p className="text-xs text-red-300 font-medium mb-4">{error}</p>
               <button
-                onClick={() => fetchSession(true)}
+                onClick={() => refetch()}
                 className="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-100 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 transition-colors"
               >
                 Retry Loading
@@ -129,7 +107,7 @@ export default function SessionPage({ params }: SessionPageProps) {
             </div>
           )}
 
-          {!isLoading && session && (
+          {session && (
             <>
               {actionError && (
                 <div className="bg-red-950/40 border border-red-800/50 text-red-300 px-4 py-3 rounded-xl text-xs flex items-center justify-between gap-3 animate-in fade-in">
