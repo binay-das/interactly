@@ -162,6 +162,13 @@ export default function SessionPage({ params }: SessionPageProps) {
 
                 <div className="flex items-center gap-3">
                   <Link
+                    href={`/dashboard/sessions/${session.id}/analytics`}
+                    className="px-3.5 py-2 rounded-xl text-xs font-semibold text-zinc-100 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition-all flex items-center gap-1.5 shadow-md"
+                  >
+                    <span>📊</span>
+                    <span>View Analytics</span>
+                  </Link>
+                  <Link
                     href={`/dashboard/sessions/${session.id}/present`}
                     target="_blank"
                     className="px-3.5 py-2 rounded-xl text-xs font-semibold text-zinc-950 bg-indigo-400 hover:bg-indigo-300 transition-all flex items-center gap-1.5 shadow-md"
