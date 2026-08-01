@@ -4,12 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { QuestionDetails } from "@repo/types";
 import {
-  getPlayerSessionStateApi,
   getSessionApi,
   reconnectPlayerApi,
   submitAnswerApi,
+  type PlayerSessionStateResponse,
   type SubmitAnswerResponse,
 } from "../../lib/api-client";
+import { usePlayerSessionStatePolling } from "../../hooks/useSessionPolling";
 import { PlayerLobbyScreen } from "../../components/player/player-lobby-screen";
 import { PlayerQuestionScreen } from "../../components/player/player-question-screen";
 import { PlayerRevealScreen } from "../../components/player/player-reveal-screen";
@@ -30,7 +31,6 @@ export default function PlayPage() {
   const [sessionState, setSessionState] = useState<"LOBBY" | "QUESTION" | "REVEAL" | "LEADERBOARD" | "FINISHED">("LOBBY");
   const [quizTitle, setQuizTitle] = useState<string>("Live Quiz");
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const [currentQuestion, setCurrentQuestion] = useState<QuestionDetails | null>(null);
   const [questionNumber, setQuestionNumber] = useState(1);
@@ -65,7 +65,7 @@ export default function PlayPage() {
 
         setSessionState(res.sessionState);
         setQuizTitle(res.quizTitle || "Live Quiz");
-      } catch (err: unknown) {
+      } catch {
         localStorage.removeItem("interactly_player_session");
         router.push("/join");
       } finally {
@@ -76,22 +76,21 @@ export default function PlayPage() {
     initPlayerSession();
   }, [router]);
 
-  useEffect(() => {
-    if (!storedSession) return;
+  // Reusable polling hook for Player Session state
+  usePlayerSessionStatePolling(storedSession?.sessionId || null, {
+    enabled: !!storedSession && sessionState !== "FINISHED",
+    intervalMs: 1500,
+    onSuccess: async (stateRes: PlayerSessionStateResponse) => {
+      setSessionState(stateRes.state);
+      setQuestionStartedAt(stateRes.questionStartedAt || null);
+      setQuestionEndsAt(stateRes.questionEndsAt || null);
 
-    const pollSessionState = async () => {
-      try {
-        const stateRes = await getPlayerSessionStateApi(storedSession.sessionId);
-        setSessionState(stateRes.state);
+      if (stateRes.state === "QUESTION" && stateRes.currentQuestionId) {
+        if (currentQuestionIdRef.current !== stateRes.currentQuestionId) {
+          currentQuestionIdRef.current = stateRes.currentQuestionId;
 
-        setQuestionStartedAt(stateRes.questionStartedAt || null);
-        setQuestionEndsAt(stateRes.questionEndsAt || null);
-
-        if (stateRes.state === "QUESTION" && stateRes.currentQuestionId) {
-          if (currentQuestionIdRef.current !== stateRes.currentQuestionId) {
-            currentQuestionIdRef.current = stateRes.currentQuestionId;
-
-            const fullSession = await getSessionApi(storedSession.sessionId);
+          try {
+            const fullSession = await getSessionApi(storedSession!.sessionId);
             const questions = fullSession.quiz?.questions || [];
             setTotalQuestions(questions.length || 1);
 
@@ -101,17 +100,12 @@ export default function PlayPage() {
               setQuestionNumber(qIndex + 1);
               setCurrentQuestion(activeQ);
             }
+          } catch {
           }
         }
-      } catch {
       }
-    };
-
-    pollSessionState();
-    const interval = setInterval(pollSessionState, 1500);
-
-    return () => clearInterval(interval);
-  }, [storedSession]);
+    },
+  });
 
   const handleSubmitAnswer = async (selectedOptionId: string, responseTimeMs: number) => {
     if (!storedSession || !currentQuestion || isSubmitting) return;
@@ -142,85 +136,82 @@ export default function PlayPage() {
     }
   };
 
-  const handleLeaveSession = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("interactly_player_session");
-    }
-    router.push("/join");
-  };
-
-  if (isLoading) {
+  if (isLoading || !storedSession) {
     return (
       <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center p-4">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-zinc-400 font-mono">Connecting to game session...</p>
+          <div className="w-10 h-10 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm font-mono text-zinc-400">Connecting to Live Game Session...</p>
         </div>
       </div>
     );
   }
 
-  if (error || !storedSession) {
-    return (
-      <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center p-4">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 text-center max-w-sm w-full space-y-4">
-          <p className="text-xs text-red-400 font-medium">{error || "Session disconnected"}</p>
-          <button
-            onClick={handleLeaveSession}
-            className="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-200 transition-colors"
-          >
-            Return to Join Screen
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const selectedOptionForCurrentQ = currentQuestion
+    ? submittedAnswersMap[currentQuestion.id] || null
+    : null;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center p-4 sm:p-6 selection:bg-zinc-800">
-      {sessionState === "LOBBY" && (
-        <PlayerLobbyScreen
-          nickname={storedSession.nickname}
-          quizTitle={quizTitle}
-          onLeave={handleLeaveSession}
-        />
-      )}
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col selection:bg-zinc-800">
+      <header className="border-b border-zinc-800/80 bg-zinc-900/50 backdrop-blur-md px-4 py-3 sticky top-0 z-40 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+          <span className="text-xs font-mono font-bold text-zinc-300 truncate max-w-[180px] sm:max-w-xs">
+            {quizTitle}
+          </span>
+        </div>
 
-      {sessionState === "QUESTION" && currentQuestion && (
-        <PlayerQuestionScreen
-          question={currentQuestion}
-          questionNumber={questionNumber}
-          totalQuestions={totalQuestions}
-          questionStartedAt={questionStartedAt}
-          questionEndsAt={questionEndsAt}
-          submittedOptionId={submittedAnswersMap[currentQuestion.id] || null}
-          onSubmitAnswer={handleSubmitAnswer}
-          isSubmitting={isSubmitting}
-        />
-      )}
+        <div className="flex items-center gap-3 text-xs font-mono">
+          <span className="text-zinc-400">Player:</span>
+          <span className="font-bold text-indigo-400 bg-indigo-950/60 border border-indigo-800 px-2.5 py-1 rounded-full">
+            {storedSession.nickname}
+          </span>
+        </div>
+      </header>
 
-      {sessionState === "REVEAL" && (
-        <PlayerRevealScreen
-          lastResult={lastResult}
-          nickname={storedSession.nickname}
-        />
-      )}
+      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 max-w-2xl w-full mx-auto">
+        {sessionState === "LOBBY" && (
+          <PlayerLobbyScreen
+            nickname={storedSession.nickname}
+            quizTitle={quizTitle}
+          />
+        )}
 
-      {sessionState === "LEADERBOARD" && (
-        <PlayerLeaderboardScreen
-          sessionId={storedSession.sessionId}
-          currentParticipantId={storedSession.participantId}
-          nickname={storedSession.nickname}
-        />
-      )}
+        {sessionState === "QUESTION" && currentQuestion && (
+          <PlayerQuestionScreen
+            question={currentQuestion}
+            questionNumber={questionNumber}
+            totalQuestions={totalQuestions}
+            questionStartedAt={questionStartedAt}
+            questionEndsAt={questionEndsAt}
+            submittedOptionId={selectedOptionForCurrentQ}
+            isSubmitting={isSubmitting}
+            onSubmitAnswer={handleSubmitAnswer}
+          />
+        )}
 
-      {sessionState === "FINISHED" && (
-        <PlayerFinalResultsScreen
-          sessionId={storedSession.sessionId}
-          currentParticipantId={storedSession.participantId}
-          nickname={storedSession.nickname}
-        />
-      )}
+        {sessionState === "REVEAL" && (
+          <PlayerRevealScreen
+            lastResult={lastResult}
+            nickname={storedSession.nickname}
+          />
+        )}
+
+        {sessionState === "LEADERBOARD" && (
+          <PlayerLeaderboardScreen
+            sessionId={storedSession.sessionId}
+            currentParticipantId={storedSession.participantId}
+          />
+        )}
+
+        {sessionState === "FINISHED" && (
+          <PlayerFinalResultsScreen
+            sessionId={storedSession.sessionId}
+            currentParticipantId={storedSession.participantId}
+            nickname={storedSession.nickname}
+          />
+        )}
+      </main>
     </div>
   );
 }
