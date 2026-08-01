@@ -7,6 +7,7 @@ import type {
   QuestionDetails,
   QuestionOption,
   QuizDetails,
+  SessionAnalytics,
   UpdateQuizDTO,
 } from "@repo/types";
 import type {
@@ -317,3 +318,8 @@ export async function getLeaderboardApi(sessionId: string, options?: RequestInit
 export async function getFinalResultsApi(sessionId: string, options?: RequestInit): Promise<FinalResultsResponse> {
   return apiClient.get<FinalResultsResponse>(`/gameplay/session/${sessionId}/results`, options);
 }
+
+export async function getSessionAnalyticsApi(sessionId: string, options?: RequestInit): Promise<SessionAnalytics> {
+  return apiClient.get<SessionAnalytics>(`/gameplay/session/${sessionId}/analytics`, options);
+}
+
