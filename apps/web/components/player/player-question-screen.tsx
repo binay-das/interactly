@@ -57,6 +57,22 @@ export function PlayerQuestionScreen({
     return () => clearInterval(interval);
   }, [questionEndsAt, question.timeLimit]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (selectedOptionId || isSubmitting) return;
+      const keyIndex = parseInt(e.key, 10) - 1;
+      if (!isNaN(keyIndex) && keyIndex >= 0 && keyIndex < question.options.length) {
+        const option = question.options[keyIndex];
+        if (option) {
+          handleSelectOption(option);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [question.options, selectedOptionId, isSubmitting]);
+
   const handleSelectOption = async (option: QuestionOption) => {
     if (selectedOptionId || isSubmitting) return;
 
@@ -121,7 +137,7 @@ export function PlayerQuestionScreen({
               key={option.id}
               onClick={() => handleSelectOption(option)}
               disabled={isLocked}
-              className={`w-full p-4 rounded-2xl border transition-all text-left flex items-start gap-3 cursor-pointer shadow-md relative overflow-hidden group ${
+              className={`w-full p-4 rounded-2xl border transition-all text-left flex items-start gap-3 cursor-pointer shadow-md relative overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 ${
                 isSelected
                   ? "bg-indigo-950 border-indigo-500 ring-2 ring-indigo-500 text-white"
                   : isLocked
