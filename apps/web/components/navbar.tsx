@@ -11,7 +11,7 @@ export function Navbar() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
         <Link 
           href="/"
-          className="text-base font-bold tracking-tight text-zinc-100 hover:text-zinc-300 transition-colors"
+          className="text-base font-bold tracking-tight text-zinc-100 hover:text-zinc-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-md px-1"
         >
           Interactly
         </Link>
@@ -24,7 +24,7 @@ export function Navbar() {
               </span>
               <button
                 onClick={() => logout()}
-                className="text-xs font-medium px-3 py-1.5 rounded-md text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 transition-colors cursor-pointer"
+                className="text-xs font-medium px-3 py-1.5 rounded-md text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               >
                 Sign out
               </button>
@@ -33,13 +33,13 @@ export function Navbar() {
             <>
               <Link
                 href="/login"
-                className="text-xs font-medium px-3 py-1.5 rounded-md text-zinc-300 hover:text-white transition-colors"
+                className="text-xs font-medium px-3 py-1.5 rounded-md text-zinc-300 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               >
                 Sign in
               </Link>
               <Link
                 href="/register"
-                className="text-xs font-medium px-3 py-1.5 rounded-md text-zinc-950 bg-zinc-100 hover:bg-zinc-200 transition-colors"
+                className="text-xs font-medium px-3 py-1.5 rounded-md text-zinc-950 bg-zinc-100 hover:bg-zinc-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               >
                 Sign up
               </Link>
