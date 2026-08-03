@@ -11,6 +11,7 @@ import {
   type SubmitAnswerResponse,
 } from "../../lib/api-client";
 import { usePlayerSessionStatePolling } from "../../hooks/useSessionPolling";
+import { useToast } from "../../context/toast-context";
 import { PlayerLobbyScreen } from "../../components/player/player-lobby-screen";
 import { PlayerQuestionScreen } from "../../components/player/player-question-screen";
 import { PlayerRevealScreen } from "../../components/player/player-reveal-screen";
@@ -26,6 +27,7 @@ interface StoredSession {
 
 export default function PlayPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const [storedSession, setStoredSession] = useState<StoredSession | null>(null);
   const [sessionState, setSessionState] = useState<"LOBBY" | "QUESTION" | "REVEAL" | "LEADERBOARD" | "FINISHED">("LOBBY");
@@ -67,6 +69,7 @@ export default function PlayPage() {
         setQuizTitle(res.quizTitle || "Live Quiz");
       } catch {
         localStorage.removeItem("interactly_player_session");
+        toast.error("Session expired or invalid. Please join again.");
         router.push("/join");
       } finally {
         setIsLoading(false);
@@ -74,9 +77,8 @@ export default function PlayPage() {
     };
 
     initPlayerSession();
-  }, [router]);
+  }, [router, toast]);
 
-  // Reusable polling hook for Player Session state
   usePlayerSessionStatePolling(storedSession?.sessionId || null, {
     enabled: !!storedSession && sessionState !== "FINISHED",
     intervalMs: 1500,
@@ -126,6 +128,7 @@ export default function PlayPage() {
         ...prev,
         [currentQuestion.id]: selectedOptionId,
       }));
+      toast.success("Answer locked in!");
     } catch {
       setSubmittedAnswersMap((prev) => ({
         ...prev,
