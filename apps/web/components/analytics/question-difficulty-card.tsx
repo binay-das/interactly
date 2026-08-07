@@ -16,7 +16,7 @@ export function QuestionDifficultyCard({ questionStats }: QuestionDifficultyCard
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {hardest && (
-        <div className="bg-gradient-to-br from-red-950/40 via-zinc-900 to-zinc-900 border border-red-800/60 rounded-2xl p-5 shadow-lg flex flex-col justify-between space-y-3">
+        <div className="bg-linear-to-br from-red-950/40 via-zinc-900 to-zinc-900 border border-red-800/60 rounded-2xl p-5 shadow-lg flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-red-400 bg-red-950 px-2.5 py-1 rounded-full border border-red-800">
               🔥 Hardest Question
@@ -37,7 +37,7 @@ export function QuestionDifficultyCard({ questionStats }: QuestionDifficultyCard
       )}
 
       {easiest && (
-        <div className="bg-gradient-to-br from-emerald-950/40 via-zinc-900 to-zinc-900 border border-emerald-800/60 rounded-2xl p-5 shadow-lg flex flex-col justify-between space-y-3">
+        <div className="bg-linear-to-br from-emerald-950/40 via-zinc-900 to-zinc-900 border border-emerald-800/60 rounded-2xl p-5 shadow-lg flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950 px-2.5 py-1 rounded-full border border-emerald-800">
               ✨ Easiest Question

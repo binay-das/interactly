@@ -33,7 +33,7 @@ export function JoinCodeDisplay({ joinCode, joinUrl }: JoinCodeDisplayProps) {
   };
 
   return (
-    <div className="bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border border-zinc-800 rounded-2xl p-6 sm:p-8 text-center shadow-xl relative overflow-hidden">
+    <div className="bg-linear-to-br from-zinc-900 via-zinc-900 to-zinc-950 border border-zinc-800 rounded-2xl p-6 sm:p-8 text-center shadow-xl relative overflow-hidden">
       <div className="absolute top-0 right-0 p-3 opacity-10">
         <svg className="w-32 h-32 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
@@ -45,7 +45,7 @@ export function JoinCodeDisplay({ joinCode, joinUrl }: JoinCodeDisplayProps) {
       </p>
 
       <div className="my-3">
-        <span className="font-mono text-4xl sm:text-6xl font-extrabold tracking-widest text-zinc-100 bg-clip-text bg-gradient-to-r from-zinc-100 via-zinc-200 to-zinc-400 selection:bg-zinc-800">
+        <span className="font-mono text-4xl sm:text-6xl font-extrabold tracking-widest text-zinc-100 bg-clip-text bg-linear-to-r from-zinc-100 via-zinc-200 to-zinc-400 selection:bg-zinc-800">
           {joinCode}
         </span>
       </div>

@@ -34,7 +34,7 @@ export function PlayerLeaderboardScreen({
       </div>
 
       {playerRank && (
-        <div className="bg-gradient-to-r from-indigo-950/80 to-zinc-900 border border-indigo-700/80 p-4 rounded-2xl flex items-center justify-between shadow-md">
+        <div className="bg-linear-to-r from-indigo-950/80 to-zinc-900 border border-indigo-700/80 p-4 rounded-2xl flex items-center justify-between shadow-md">
           <div className="flex items-center gap-3">
             <span className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-mono font-extrabold text-sm flex items-center justify-center">
               #{playerRank.rank}
@@ -72,23 +72,21 @@ export function PlayerLeaderboardScreen({
             return (
               <div
                 key={entry.id}
-                className={`p-3.5 rounded-xl border transition-all flex items-center justify-between ${
-                  isMe
+                className={`p-3.5 rounded-xl border transition-all flex items-center justify-between ${isMe
                     ? "bg-indigo-950/60 border-indigo-500/80"
                     : "bg-zinc-950 border-zinc-800/80"
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <span
-                    className={`w-7 h-7 rounded-lg font-mono font-bold text-xs flex items-center justify-center ${
-                      entry.rank === 1
+                    className={`w-7 h-7 rounded-lg font-mono font-bold text-xs flex items-center justify-center ${entry.rank === 1
                         ? "bg-amber-400 text-zinc-950"
                         : entry.rank === 2
-                        ? "bg-zinc-300 text-zinc-950"
-                        : entry.rank === 3
-                        ? "bg-amber-700 text-white"
-                        : "bg-zinc-800 text-zinc-400"
-                    }`}
+                          ? "bg-zinc-300 text-zinc-950"
+                          : entry.rank === 3
+                            ? "bg-amber-700 text-white"
+                            : "bg-zinc-800 text-zinc-400"
+                      }`}
                   >
                     {entry.rank}
                   </span>

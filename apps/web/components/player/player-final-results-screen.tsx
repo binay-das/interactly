@@ -70,7 +70,7 @@ export function PlayerFinalResultsScreen({
           </div>
 
           {/* 1st Place */}
-          <div className="bg-gradient-to-t from-amber-950/80 to-zinc-950 border border-amber-600/80 p-4 rounded-2xl text-center space-y-1.5 ring-2 ring-amber-500/50">
+          <div className="bg-linear-to-t from-amber-950/80 to-zinc-950 border border-amber-600/80 p-4 rounded-2xl text-center space-y-1.5 ring-2 ring-amber-500/50">
             <span className="text-3xl">👑</span>
             <p className="text-sm font-extrabold text-amber-300 truncate">{top1?.nickname || "—"}</p>
             <p className="text-xs font-mono font-bold text-amber-400">{top1?.score ?? 0} pts</p>

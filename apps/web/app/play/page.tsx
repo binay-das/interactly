@@ -159,7 +159,7 @@ export default function PlayPage() {
       <header className="border-b border-zinc-800/80 bg-zinc-900/50 backdrop-blur-md px-4 py-3 sticky top-0 z-40 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-          <span className="text-xs font-mono font-bold text-zinc-300 truncate max-w-[180px] sm:max-w-xs">
+          <span className="text-xs font-mono font-bold text-zinc-300 truncate max-w-45 sm:max-w-xs">
             {quizTitle}
           </span>
         </div>

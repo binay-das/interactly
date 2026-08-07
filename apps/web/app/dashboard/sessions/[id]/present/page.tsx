@@ -96,7 +96,7 @@ export default function PresenterPage({ params }: PresenterPageProps) {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center p-6 sm:p-12 relative overflow-hidden selection:bg-zinc-800">
-      <div className="absolute inset-0 bg-gradient-to-b from-indigo-950/20 via-transparent to-zinc-950 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-b from-indigo-950/20 via-transparent to-zinc-950 pointer-events-none" />
 
       <div className="absolute top-6 left-6 right-6 flex items-center justify-between z-40 text-xs text-zinc-400 font-mono">
         <button

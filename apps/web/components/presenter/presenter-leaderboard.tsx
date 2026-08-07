@@ -35,27 +35,25 @@ export function PresenterLeaderboard({ sessionId }: PresenterLeaderboardProps) {
           {entries.slice(0, 5).map((entry) => (
             <div
               key={entry.id}
-              className={`p-4 sm:p-5 rounded-2xl border transition-all flex items-center justify-between shadow-xl ${
-                entry.rank === 1
-                  ? "bg-gradient-to-r from-amber-950/80 via-zinc-900 to-zinc-900 border-amber-500/80 ring-1 ring-amber-500/50"
+              className={`p-4 sm:p-5 rounded-2xl border transition-all flex items-center justify-between shadow-xl ${entry.rank === 1
+                  ? "bg-linear-to-r from-amber-950/80 via-zinc-900 to-zinc-900 border-amber-500/80 ring-1 ring-amber-500/50"
                   : entry.rank === 2
-                  ? "bg-zinc-900/90 border-zinc-400/50"
-                  : entry.rank === 3
-                  ? "bg-zinc-900/90 border-amber-800/50"
-                  : "bg-zinc-900/70 border-zinc-800/80"
-              }`}
+                    ? "bg-zinc-900/90 border-zinc-400/50"
+                    : entry.rank === 3
+                      ? "bg-zinc-900/90 border-amber-800/50"
+                      : "bg-zinc-900/70 border-zinc-800/80"
+                }`}
             >
               <div className="flex items-center gap-4">
                 <span
-                  className={`w-10 h-10 rounded-xl font-mono font-extrabold text-base flex items-center justify-center shadow-inner ${
-                    entry.rank === 1
+                  className={`w-10 h-10 rounded-xl font-mono font-extrabold text-base flex items-center justify-center shadow-inner ${entry.rank === 1
                       ? "bg-amber-400 text-zinc-950"
                       : entry.rank === 2
-                      ? "bg-zinc-300 text-zinc-950"
-                      : entry.rank === 3
-                      ? "bg-amber-700 text-white"
-                      : "bg-zinc-800 text-zinc-400"
-                  }`}
+                        ? "bg-zinc-300 text-zinc-950"
+                        : entry.rank === 3
+                          ? "bg-amber-700 text-white"
+                          : "bg-zinc-800 text-zinc-400"
+                    }`}
                 >
                   #{entry.rank}
                 </span>

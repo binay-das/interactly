@@ -57,7 +57,7 @@ export function PresenterPodium({ sessionId }: PresenterPodiumProps) {
             </div>
           </div>
 
-          <div className="bg-gradient-to-t from-amber-950 via-zinc-900 to-zinc-900 border-2 border-amber-500 p-8 rounded-3xl text-center space-y-3 shadow-2xl h-80 flex flex-col justify-end ring-4 ring-amber-500/30 scale-105">
+          <div className="bg-linear-to-t from-amber-950 via-zinc-900 to-zinc-900 border-2 border-amber-500 p-8 rounded-3xl text-center space-y-3 shadow-2xl h-80 flex flex-col justify-end ring-4 ring-amber-500/30 scale-105">
             <span className="text-6xl animate-bounce">👑</span>
             <h3 className="text-2xl font-extrabold text-amber-300 truncate">{top1?.nickname || "—"}</h3>
             <p className="text-lg font-mono font-extrabold text-amber-400">{top1?.score ?? 0} pts</p>

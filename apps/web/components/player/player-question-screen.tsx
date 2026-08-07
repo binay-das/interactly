@@ -106,7 +106,7 @@ export function PlayerQuestionScreen({
 
       <div className="w-full h-2 bg-zinc-950 rounded-full overflow-hidden border border-zinc-800">
         <div
-          className="h-full bg-gradient-to-r from-indigo-500 to-indigo-400 transition-all duration-500 ease-linear"
+          className="h-full bg-linear-to-r from-indigo-500 to-indigo-400 transition-all duration-500 ease-linear"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
@@ -137,18 +137,16 @@ export function PlayerQuestionScreen({
               key={option.id}
               onClick={() => handleSelectOption(option)}
               disabled={isLocked}
-              className={`w-full p-4 rounded-2xl border transition-all text-left flex items-start gap-3 cursor-pointer shadow-md relative overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 ${
-                isSelected
+              className={`w-full p-4 rounded-2xl border transition-all text-left flex items-start gap-3 cursor-pointer shadow-md relative overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 ${isSelected
                   ? "bg-indigo-950 border-indigo-500 ring-2 ring-indigo-500 text-white"
                   : isLocked
-                  ? "opacity-50 cursor-not-allowed " + style.bg
-                  : style.bg
-              }`}
+                    ? "opacity-50 cursor-not-allowed " + style.bg
+                    : style.bg
+                }`}
             >
               <div
-                className={`w-8 h-8 rounded-xl font-mono font-bold text-xs flex items-center justify-center shrink-0 border ${
-                  isSelected ? "bg-indigo-600 text-white border-indigo-400" : style.badge
-                }`}
+                className={`w-8 h-8 rounded-xl font-mono font-bold text-xs flex items-center justify-center shrink-0 border ${isSelected ? "bg-indigo-600 text-white border-indigo-400" : style.badge
+                  }`}
               >
                 {style.letter}
               </div>

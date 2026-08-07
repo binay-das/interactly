@@ -66,7 +66,7 @@ export function PresenterQuestion({
 
       <div className="w-full h-3 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800 shadow-inner">
         <div
-          className="h-full bg-gradient-to-r from-indigo-500 via-indigo-400 to-emerald-400 transition-all duration-500 ease-linear"
+          className="h-full bg-linear-to-r from-indigo-500 via-indigo-400 to-emerald-400 transition-all duration-500 ease-linear"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
