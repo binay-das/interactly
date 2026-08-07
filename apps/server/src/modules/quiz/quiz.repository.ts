@@ -30,20 +30,20 @@ export class QuizRepository {
         createdById: data.createdById,
         questions: data.questions
           ? {
-              create: data.questions.map((q) => ({
-                text: q.text,
-                order: q.order,
-                timeLimit: q.timeLimit ?? 20,
-                points: q.points ?? 1000,
-                options: {
-                  create: q.options.map((o) => ({
-                    text: o.text,
-                    order: o.order,
-                    isCorrect: o.isCorrect,
-                  })),
-                },
-              })),
-            }
+            create: data.questions.map((q) => ({
+              text: q.text,
+              order: q.order,
+              timeLimit: q.timeLimit ?? 20,
+              points: q.points ?? 1000,
+              options: {
+                create: q.options.map((o) => ({
+                  text: o.text,
+                  order: o.order,
+                  isCorrect: o.isCorrect,
+                })),
+              },
+            })),
+          }
           : undefined,
       },
       include: {
@@ -101,8 +101,13 @@ export class QuizRepository {
   }
 
   async delete(id: string): Promise<Quiz> {
-    return db.quiz.delete({
-      where: { id },
+    return db.$transaction(async (tx) => {
+      await tx.gameSession.deleteMany({
+        where: { quizId: id },
+      });
+      return tx.quiz.delete({
+        where: { id },
+      });
     });
   }
 
@@ -168,12 +173,12 @@ export class QuizRepository {
           points: data.points,
           options: data.options
             ? {
-                create: data.options.map((o) => ({
-                  text: o.text,
-                  order: o.order,
-                  isCorrect: o.isCorrect,
-                })),
-              }
+              create: data.options.map((o) => ({
+                text: o.text,
+                order: o.order,
+                isCorrect: o.isCorrect,
+              })),
+            }
             : undefined,
         },
         include: { options: true },
