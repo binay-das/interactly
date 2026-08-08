@@ -5,6 +5,7 @@ import { useAuth } from "../../context/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Logo } from "../../components/ui/logo";
 import { ThemeToggle } from "../../components/ui/theme-toggle";
 
 export default function LoginPage() {
@@ -63,8 +64,9 @@ export default function LoginPage() {
       </div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-sm text-center">
-        <Link href="/" className="inline-block text-xl font-bold tracking-tight text-[#1f2328] dark:text-[#f0f6fc] mb-4">
-          Interactly
+        <Link href="/" className="inline-flex items-center gap-2 text-xl font-bold tracking-tight text-[#1f2328] dark:text-[#f0f6fc] mb-4 hover:opacity-90 transition-opacity">
+          <Logo size={28} className="rounded" />
+          <span>Interactly</span>
         </Link>
         <h1 className="text-xl font-semibold tracking-tight text-[#1f2328] dark:text-[#f0f6fc]">
           Sign in to Interactly

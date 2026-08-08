@@ -4,6 +4,8 @@ import { Navbar } from "../components/navbar";
 import { useAuth } from "../context/auth-context";
 import Link from "next/link";
 
+import { Logo } from "../components/ui/logo";
+
 export default function HomePage() {
   const { user, isLoading } = useAuth();
 
@@ -78,7 +80,10 @@ export default function HomePage() {
 
       <footer className="py-8 border-t border-zinc-900">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between text-xs text-zinc-500 font-mono">
-          <span>Interactly</span>
+          <div className="flex items-center gap-2">
+            <Logo size={18} className="rounded" />
+            <span>Interactly</span>
+          </div>
           <span>&copy; {new Date().getFullYear()}</span>
         </div>
       </footer>

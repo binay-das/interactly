@@ -2,6 +2,7 @@
 
 import { useAuth } from "../context/auth-context";
 import Link from "next/link";
+import { Logo } from "./ui/logo";
 import { ThemeToggle } from "./ui/theme-toggle";
 
 export function Navbar() {
@@ -12,9 +13,10 @@ export function Navbar() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
         <Link 
           href="/"
-          className="text-base font-bold tracking-tight text-[#1f2328] dark:text-[#f0f6fc] hover:text-[#0969da] dark:hover:text-[#2f81f7] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0969da] dark:focus-visible:ring-[#2f81f7] rounded-md px-1"
+          className="flex items-center gap-2.5 text-base font-bold tracking-tight text-[#1f2328] dark:text-[#f0f6fc] hover:text-[#0969da] dark:hover:text-[#2f81f7] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0969da] dark:focus-visible:ring-[#2f81f7] rounded-md px-1 py-0.5"
         >
-          Interactly
+          <Logo size={24} className="rounded" />
+          <span>Interactly</span>
         </Link>
 
         <div className="flex items-center gap-3">

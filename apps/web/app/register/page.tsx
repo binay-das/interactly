@@ -4,6 +4,7 @@ import { adminRegisterSchema } from "@repo/validation";
 import { useAuth } from "../../context/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Logo } from "../../components/ui/logo";
 import Link from "next/link";
 
 export default function RegisterPage() {
@@ -64,8 +65,9 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <Link href="/" className="inline-block text-xl font-bold tracking-tight text-zinc-100 mb-6">
-          Interactly
+        <Link href="/" className="inline-flex items-center gap-2.5 text-xl font-bold tracking-tight text-zinc-100 mb-6 hover:opacity-90 transition-opacity">
+          <Logo size={28} className="rounded" />
+          <span>Interactly</span>
         </Link>
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">
           Create admin account
