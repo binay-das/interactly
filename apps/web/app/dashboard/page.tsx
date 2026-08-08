@@ -135,17 +135,17 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col selection:bg-zinc-800">
+      <div className="min-h-screen bg-(--background) text-(--foreground) flex flex-col transition-colors duration-150">
         <Navbar />
 
         <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
+              <h1 className="text-2xl font-bold tracking-tight text-[#1f2328] dark:text-[#f0f6fc]">
                 Quiz Management
               </h1>
-              <p className="text-xs text-zinc-400 mt-1">
-                Manage, publish, and host live quiz sessions as <span className="text-zinc-200 font-mono">{user?.email}</span>
+              <p className="text-xs text-[#636c76] dark:text-[#8b949e] mt-1">
+                Manage, publish, and host live quiz sessions as <span className="text-[#1f2328] dark:text-[#f0f6fc] font-mono">{user?.email}</span>
               </p>
             </div>
 
@@ -155,7 +155,7 @@ export default function DashboardPage() {
                   setSelectedQuizForSession(undefined);
                   setIsSessionModalOpen(true);
                 }}
-                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-indigo-300 bg-indigo-950/60 border border-indigo-800/60 hover:bg-indigo-900/60 transition-colors shadow-sm cursor-pointer flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                className="px-3.5 py-2 rounded-md text-xs font-semibold text-white bg-[#0969da] hover:bg-[#0860ca] dark:bg-[#1f6beb] dark:hover:bg-[#388bfd] transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0969da]"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -166,7 +166,7 @@ export default function DashboardPage() {
 
               <button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-950 bg-zinc-100 hover:bg-zinc-200 transition-colors shadow-sm cursor-pointer flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                className="px-4 py-2 rounded-md text-xs font-semibold text-white bg-[#1f883d] hover:bg-[#1a7f37] dark:bg-[#238636] dark:hover:bg-[#2ea043] border border-[#1a7f37] dark:border-[#238636] transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#238636]"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -177,11 +177,11 @@ export default function DashboardPage() {
           </div>
 
           {error && (
-            <div className="bg-red-950/40 border border-red-800/50 rounded-xl p-6 text-center mb-8">
-              <p className="text-xs text-red-300 font-medium mb-3">{error}</p>
+            <div className="bg-[#ffebe9] dark:bg-[#490202]/40 border border-[#ff8182] dark:border-[#da3633]/50 rounded-xl p-6 text-center mb-8">
+              <p className="text-xs text-[#cf222e] dark:text-[#f85149] font-medium mb-3">{error}</p>
               <button
                 onClick={fetchQuizzes}
-                className="px-3.5 py-1.5 rounded-md text-xs font-medium text-zinc-200 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 transition-colors"
+                className="px-3.5 py-1.5 rounded-md text-xs font-medium text-[#1f2328] dark:text-[#f0f6fc] bg-white dark:bg-[#21262d] border border-[#d0d7de] dark:border-[#30363d] hover:bg-[#f6f8fa] dark:hover:bg-[#30363d] transition-colors"
               >
                 Try Again
               </button>
@@ -201,7 +201,7 @@ export default function DashboardPage() {
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-48 rounded-2xl" />
+                <Skeleton key={i} className="h-48 rounded-xl bg-[#f6f8fa] dark:bg-[#161b22] border border-[#d0d7de] dark:border-[#30363d]" />
               ))}
             </div>
           )}
@@ -267,3 +267,5 @@ export default function DashboardPage() {
     </ProtectedRoute>
   );
 }
+
+

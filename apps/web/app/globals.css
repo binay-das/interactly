@@ -1,15 +1,121 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --background: #0f172a;
-    --foreground: #f8fafc;
-  }
+:root {
+  --gh-bg: #ffffff;
+  --gh-bg-subtle: #f6f8fa;
+  --gh-card-bg: #ffffff;
+  --gh-card-hover: #f6f8fa;
+  --gh-border: #d0d7de;
+  --gh-border-subtle: #eaeef2;
+  --gh-text-primary: #1f2328;
+  --gh-text-secondary: #636c76;
+  --gh-text-muted: #8c959f;
+  --gh-blue: #0969da;
+  --gh-blue-hover: #0860ca;
+  --gh-blue-bg: #ddf4ff;
+  --gh-blue-border: #54aef0;
+  --gh-green: #1f883d;
+  --gh-green-hover: #1a7f37;
+  --gh-green-bg: #dafbe1;
+  --gh-green-border: #4ac26b;
+  --gh-amber: #9a6700;
+  --gh-amber-bg: #fff8c5;
+  --gh-amber-border: #d4a72c;
+  --gh-red: #cf222e;
+  --gh-red-bg: #ffebe9;
+  --gh-red-border: #ff8182;
 
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    min-height: 100vh;
-  }
+  --background: var(--gh-bg-subtle);
+  --foreground: var(--gh-text-primary);
 }
+
+html.dark {
+  --gh-bg: #0d1117;
+  --gh-bg-subtle: #010409;
+  --gh-card-bg: #161b22;
+  --gh-card-hover: #1c2128;
+  --gh-border: #30363d;
+  --gh-border-subtle: #21262d;
+  --gh-text-primary: #f0f6fc;
+  --gh-text-secondary: #8b949e;
+  --gh-text-muted: #6e7681;
+  --gh-blue: #2f81f7;
+  --gh-blue-hover: #388bfd;
+  --gh-blue-bg: #033877;
+  --gh-blue-border: #1f6beb;
+  --gh-green: #238636;
+  --gh-green-hover: #2ea043;
+  --gh-green-bg: #113e19;
+  --gh-green-border: #238636;
+  --gh-amber: #d29922;
+  --gh-amber-bg: #341a00;
+  --gh-amber-border: #9e6a03;
+  --gh-red: #f85149;
+  --gh-red-bg: #490202;
+  --gh-red-border: #da3633;
+
+  --background: var(--gh-bg);
+  --foreground: var(--gh-text-primary);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.gh-card {
+  background-color: var(--gh-card-bg);
+  border: 1px solid var(--gh-border);
+}
+
+.gh-card-hover:hover {
+  background-color: var(--gh-card-hover);
+}
+
+.gh-border {
+  border-color: var(--gh-border);
+}
+
+.gh-border-subtle {
+  border-color: var(--gh-border-subtle);
+}
+
+.gh-text-primary {
+  color: var(--gh-text-primary);
+}
+
+.gh-text-secondary {
+  color: var(--gh-text-secondary);
+}
+
+.gh-btn-primary {
+  background-color: var(--gh-blue);
+  color: #ffffff;
+}
+
+.gh-btn-primary:hover {
+  background-color: var(--gh-blue-hover);
+}
+
+.gh-btn-success {
+  background-color: var(--gh-green);
+  color: #ffffff;
+}
+
+.gh-btn-success:hover {
+  background-color: var(--gh-green-hover);
+}
+
+.gh-btn-secondary {
+  background-color: var(--gh-bg-subtle);
+  border: 1px solid var(--gh-border);
+  color: var(--gh-text-primary);
+}
+
+.gh-btn-secondary:hover {
+  background-color: var(--gh-card-hover);
+}
+
