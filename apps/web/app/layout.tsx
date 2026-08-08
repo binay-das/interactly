@@ -7,11 +7,11 @@ import "./globals.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
+  variable: "--font-geist-sans"
 });
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
+  variable: "--font-geist-mono"
 });
 
 export const metadata: Metadata = {
@@ -26,14 +26,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)] min-h-screen transition-colors duration-150`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-(--background) text-(--foreground) min-h-screen transition-colors duration-150`}>
         <ThemeProvider>
           <AuthProvider>
             <ToastProvider>{children}</ToastProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
-
     </html>
   );
 }

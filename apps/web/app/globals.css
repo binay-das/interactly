@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 :root {
   --gh-bg: #ffffff;
   --gh-bg-subtle: #f6f8fa;
