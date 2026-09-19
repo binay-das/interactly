@@ -1,159 +1,193 @@
-# Turborepo starter
+# Interactly
 
-This Turborepo starter is maintained by the Turborepo core team.
+Interactly is a live quiz platform for creating quizzes, hosting real-time sessions, and letting players join with a short code. It includes an admin dashboard, quiz editor, presenter view, player experience, leaderboards, and session analytics.
 
-## Using this example
+## Project Structure
 
-Run the following command:
+This repository is a pnpm/Turborepo monorepo.
 
-```sh
-npx create-turbo@latest
+```text
+apps/
+  web/       Next.js app for admins, presenters, and players
+  server/    Express API for auth, quizzes, sessions, gameplay, and analytics
+
+packages/
+  auth/      JWT, password, cookie, and auth helper utilities
+  db/        Prisma schema, migrations, and database client
+  types/     Shared TypeScript DTOs and domain types
+  validation/Shared Zod schemas for request validation
+  ui/        Shared React UI primitives
+  eslint-config/
+  typescript-config/
 ```
 
-## What's inside?
+## Tech Stack
 
-This Turborepo includes the following packages/apps:
+- pnpm workspaces and Turborepo
+- Next.js, React, Tailwind CSS
+- Express
+- PostgreSQL
+- Prisma
+- Zod
+- JWT auth with HTTP-only cookies
 
-### Apps and Packages
+## Prerequisites
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- Node.js 18 or newer
+- pnpm 9
+- PostgreSQL database
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Install dependencies:
 
 ```sh
-cd my-turborepo
-turbo build
+pnpm install
 ```
 
-Without global `turbo`, use your package manager:
+## Environment Variables
+
+Create local environment files from the examples:
 
 ```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
+cp apps/server/.env.example apps/server/.env
+cp packages/db/.env.example packages/db/.env
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+`apps/server/.env`:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+```env
+PORT=
+DATABASE_URL=
+JWT_SECRET=
+JWT_EXPIRES_IN=
+CORS_ORIGIN=
+NODE_ENV=
+```
+
+`packages/db/.env`:
+
+```env
+DATABASE_URL=
+```
+
+The same database URL is needed in both places because the API uses the database package at runtime, while Prisma CLI commands run from `packages/db`.
+
+For the web app, set `NEXT_PUBLIC_API_URL` only when the API is not available at the default local URL:
+
+```env
+NEXT_PUBLIC_API_URL=
+```
+
+## Database Setup
+
+Run Prisma commands from the database package:
 
 ```sh
-turbo build --filter=docs
+pnpm --filter @repo/db db:generate
+pnpm --filter @repo/db db:migrate
 ```
 
-Without global `turbo`:
+Useful database commands:
 
 ```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+pnpm --filter @repo/db db:studio
+pnpm --filter @repo/db db:push
 ```
 
-### Develop
+Existing migrations live in `packages/db/prisma/migrations`.
 
-To develop all apps and packages, run the following command:
+## Development
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Start all development services through Turbo:
 
 ```sh
-cd my-turborepo
-turbo dev
+pnpm dev
 ```
 
-Without global `turbo`, use your package manager:
+
+Run one app at a time:
 
 ```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
+pnpm --filter web dev
+pnpm --filter @repo/server dev
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## Common Commands
 
 ```sh
-turbo dev --filter=web
+pnpm build        # Build apps and packages
+pnpm check-types  # Run TypeScript checks
+pnpm lint         # Run configured ESLint tasks
+pnpm format       # Format TypeScript, TSX, and Markdown files
 ```
 
-Without global `turbo`:
+There is not currently a repository-wide test command. Add tests before relying on this project in production.
 
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+## Core Workflows
 
-### Remote Caching
+Admin workflow:
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+1. Register or log in.
+2. Create a quiz.
+3. Add questions and answer options.
+4. Publish the quiz.
+5. Create and host a session.
+6. Present questions and advance through reveal, leaderboard, and final results.
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+Player workflow:
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+1. Open the join page.
+2. Enter the session join code and nickname.
+3. Answer each active question.
+4. View reveal, leaderboard, and final results screens.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+## API Overview
 
-```sh
-cd my-turborepo
-turbo login
-```
+The Express API is mounted under `/api`.
 
-Without global `turbo`, use your package manager:
+Main modules:
 
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
+- `auth`: admin registration, login, logout, and current-user lookup
+- `quizzes`: quiz CRUD, question editing, option editing, publishing, and archiving
+- `sessions`: game session creation, host controls, and session state
+- `players`: join, reconnect, heartbeat, and player session state
+- `gameplay`: answer submission, leaderboard, final results, and analytics
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+Request validation is handled with Zod schemas from `@repo/validation`. Shared response and DTO types live in `@repo/types`.
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+## Architecture Notes
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+The server follows a controller/service/repository split:
 
-```sh
-turbo link
-```
+- Controllers parse request input and return API responses.
+- Services contain domain rules such as publishing validation, session transitions, scoring, and ownership checks.
+- Repositories contain Prisma queries and transactions.
 
-Without global `turbo`:
+The web app uses the Next.js app router and client-side API calls through `apps/web/lib/api-client.ts`. Shared types and validation schemas are imported from workspace packages to keep frontend and backend contracts aligned.
 
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
+The database schema models:
 
-## Useful Links
+- Admins
+- Quizzes
+- Questions
+- Question options
+- Game sessions
+- Participants
+- Answers
 
-Learn more about the power of Turborepo:
+## Deployment Notes
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Production deployments need:
+
+- A PostgreSQL database
+- `DATABASE_URL` configured for both server runtime and Prisma migration execution
+- A strong `JWT_SECRET`
+- `CORS_ORIGIN` set to the deployed web origin
+- `NODE_ENV=production`
+- Prisma migrations applied with `pnpm --filter @repo/db prisma migrate deploy` or an equivalent deployment step
+- The API base URL exposed to the web app with `NEXT_PUBLIC_API_URL`
+
+Suggested deployment split:
+
+- Deploy `apps/web` to a Next.js-capable host.
+- Deploy `apps/server` as a Node.js service.
+- Run Prisma migrations during release before starting the new API version.
