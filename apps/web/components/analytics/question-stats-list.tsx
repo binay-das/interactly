@@ -8,13 +8,6 @@ interface QuestionStatsListProps {
   questionStats: QuestionAnalytics[];
 }
 
-const OPTION_COLORS = [
-  "bg-red-500 text-red-200",
-  "bg-blue-500 text-blue-200",
-  "bg-amber-500 text-amber-200",
-  "bg-emerald-500 text-emerald-200",
-];
-
 const OPTION_BADGES = [
   "bg-red-950 border-red-700 text-red-300",
   "bg-blue-950 border-blue-700 text-blue-300",

@@ -6,7 +6,6 @@ import type { QuestionDetails } from "@repo/types";
 import {
   advanceQuizSessionStateApi,
   endQuizSessionApi,
-  type GameSessionFull,
 } from "../../../../../lib/api-client";
 import { useHostSessionPolling } from "../../../../../hooks/useSessionPolling";
 import { PresenterControls } from "../../../../../components/presenter/presenter-controls";

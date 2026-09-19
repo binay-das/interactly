@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { QuizStatus, type QuizDetails } from "@repo/types";
 import { ProtectedRoute } from "../../../../components/protected-route";
@@ -32,7 +32,7 @@ export default function QuizEditorPage({ params }: QuizEditorPageProps) {
   const [isAddingQuestion, setIsAddingQuestion] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
 
-  const fetchQuiz = async () => {
+  const fetchQuiz = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -44,11 +44,11 @@ export default function QuizEditorPage({ params }: QuizEditorPageProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [quizId]);
 
   useEffect(() => {
     fetchQuiz();
-  }, [quizId]);
+  }, [fetchQuiz]);
 
   // Edit Metadata
   const handleUpdateMetadata = async (data: { title: string; description?: string; status?: QuizStatus }) => {

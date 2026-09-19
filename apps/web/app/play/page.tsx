@@ -104,6 +104,7 @@ export default function PlayPage() {
               setCurrentQuestion(activeQ);
             }
           } catch {
+            // Silently ignore session fetch failure during polling
           }
         }
       }

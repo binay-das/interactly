@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { QuestionDetails, QuestionOption } from "@repo/types";
 
 interface PlayerQuestionScreenProps {
@@ -57,6 +57,18 @@ export function PlayerQuestionScreen({
     return () => clearInterval(interval);
   }, [questionEndsAt, question.timeLimit]);
 
+  const handleSelectOption = useCallback(
+    async (option: QuestionOption) => {
+      if (selectedOptionId || isSubmitting) return;
+
+      setSelectedOptionId(option.id);
+      const responseTimeMs = Math.max(100, Date.now() - startTimeMs);
+
+      await onSubmitAnswer(option.id, responseTimeMs);
+    },
+    [selectedOptionId, isSubmitting, startTimeMs, onSubmitAnswer]
+  );
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (selectedOptionId || isSubmitting) return;
@@ -71,16 +83,7 @@ export function PlayerQuestionScreen({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [question.options, selectedOptionId, isSubmitting]);
-
-  const handleSelectOption = async (option: QuestionOption) => {
-    if (selectedOptionId || isSubmitting) return;
-
-    setSelectedOptionId(option.id);
-    const responseTimeMs = Math.max(100, Date.now() - startTimeMs);
-
-    await onSubmitAnswer(option.id, responseTimeMs);
-  };
+  }, [question.options, selectedOptionId, isSubmitting, handleSelectOption]);
 
   const isLocked = !!selectedOptionId || isSubmitting;
   const progressPercent = Math.min(100, Math.max(0, (secondsLeft / (question.timeLimit || 20)) * 100));

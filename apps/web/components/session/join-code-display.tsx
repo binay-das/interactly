@@ -20,6 +20,7 @@ export function JoinCodeDisplay({ joinCode, joinUrl }: JoinCodeDisplayProps) {
       setCopiedCode(true);
       setTimeout(() => setCopiedCode(false), 2000);
     } catch {
+      // Clipboard write failed or was denied
     }
   };
 
@@ -29,6 +30,7 @@ export function JoinCodeDisplay({ joinCode, joinUrl }: JoinCodeDisplayProps) {
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2000);
     } catch {
+      // Clipboard write failed or was denied
     }
   };
 

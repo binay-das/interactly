@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { QuizStatus, type QuizDetails } from "@repo/types";
 import { createSessionApi, listQuizzesApi } from "../../lib/api-client";
@@ -23,6 +23,20 @@ export function CreateSessionModal({
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchPublishedQuizzes = useCallback(async () => {
+    setIsLoadingQuizzes(true);
+    try {
+      const res = await listQuizzesApi(1, 100);
+      const publishedOnly = res.quizzes.filter((q) => q.status === QuizStatus.PUBLISHED);
+      setQuizzes(publishedOnly);
+      setSelectedQuizId((prev) => (!prev && publishedOnly[0] ? publishedOnly[0].id : prev));
+    } catch {
+      setError("Failed to load quizzes");
+    } finally {
+      setIsLoadingQuizzes(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       setError(null);
@@ -31,23 +45,7 @@ export function CreateSessionModal({
       }
       fetchPublishedQuizzes();
     }
-  }, [isOpen, preselectedQuizId]);
-
-  const fetchPublishedQuizzes = async () => {
-    setIsLoadingQuizzes(true);
-    try {
-      const res = await listQuizzesApi(1, 100);
-      const publishedOnly = res.quizzes.filter((q) => q.status === QuizStatus.PUBLISHED);
-      setQuizzes(publishedOnly);
-      if (!selectedQuizId && publishedOnly[0]) {
-        setSelectedQuizId(publishedOnly[0].id);
-      }
-    } catch {
-      setError("Failed to load quizzes");
-    } finally {
-      setIsLoadingQuizzes(false);
-    }
-  };
+  }, [isOpen, preselectedQuizId, fetchPublishedQuizzes]);
 
   const handleCreateSession = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { QuizDetails } from "@repo/types";
 import { ProtectedRoute } from "../../components/protected-route";
 import { Navbar } from "../../components/navbar";
@@ -38,7 +38,7 @@ export default function DashboardPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [actionQuizId, setActionQuizId] = useState<string | null>(null);
 
-  const fetchQuizzes = async () => {
+  const fetchQuizzes = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -51,11 +51,11 @@ export default function DashboardPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchQuizzes();
-  }, []);
+  }, [fetchQuizzes]);
 
   const counts = useMemo(() => {
     const all = quizzes.length;

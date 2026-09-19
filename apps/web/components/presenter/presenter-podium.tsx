@@ -20,6 +20,7 @@ export function PresenterPodium({ sessionId }: PresenterPodiumProps) {
         setRankings(res.rankings || []);
         setTotalParticipants(res.totalParticipants || 0);
       } catch {
+        // Silently ignore error fetching final podium results
       } finally {
         setIsLoading(false);
       }

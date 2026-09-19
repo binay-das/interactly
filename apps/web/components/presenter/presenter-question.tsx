@@ -23,7 +23,6 @@ export function PresenterQuestion({
   question,
   questionNumber,
   totalQuestions,
-  questionStartedAt,
   questionEndsAt,
   participantCount,
 }: PresenterQuestionProps) {
