@@ -6,6 +6,7 @@ export type Nullable<T> = T | null;
 
 export type Optional<T> = T | undefined;
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export type DeepPartial<T> = T extends Function
   ? T
   : T extends Array<infer U>
